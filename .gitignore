@@ -12,7 +12,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
-.env
+#.env
 package-lock.json
 pnpm-lock.yaml
 # Distribution directories

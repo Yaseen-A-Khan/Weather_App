@@ -5,44 +5,42 @@ pipeline {
         DOCKER_USER = "${env.DOCKER_USER}"
         DOCKER_PASS = "${env.DOCKER_PASS}"
         APP_NAME = "${env.APP_NAME}"
-        ENV_PASSWORD = "${env.ENV_PASSWORD}"
     }
 
     stages {
-        stage('checkout source') {
+        stage('Checkout Source') {
             steps {
                 checkout scm
             }
         }
 
-        stage('decrypt .env file') {
-            steps {
-                script {
-                    sh 'openssl aes-256-cbc -d -in .env.enc -out .env -k $ENV_PASSWORD -pbkdf2'
-                }
-            }
-        }
         stage('Login to Docker') {
             steps {
                 script {
-                    sh 'echo $DOCKER_PASS | sudo docker login -u $DOCKER_USER --password-stdin' 
-                    echo 'Login Completed'
+                    // Login to Docker Hub
+                    sh """
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    """
                 }
             }
         }
-        stage('Build Docker image') {
+
+        stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'sudo docker build -t ${DOCKER_USER}/${APP_NAME}:v1.0 .'
-                    echo 'Image build is completed'
+                    sh """
+                    docker build -t $DOCKER_USER/$APP_NAME:v1.0 .
+                    """
                 }
             }
         }
-        stage('Push it to Docker Hub') {
+
+        stage('Push Docker Image') {
             steps {
                 script {
-                    sh 'sudo docker push ${DOCKER_USER}/${APP_NAME}:v1.0'
-                    echo 'Succesfully Pushed image into DockerHub Repo'
+                    sh """
+                    docker push $DOCKER_USER/$APP_NAME:v1.0
+                    """
                 }
             }
         }
