@@ -17,9 +17,8 @@ pipeline {
         stage('Login to Docker') {
             steps {
                 script {
-                    // Login to Docker Hub
-                    sh """
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    bat """
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                     """
                 }
             }
@@ -28,8 +27,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh """
-                    docker build -t $DOCKER_USER/$APP_NAME:v1.0 .
+                    bat """
+                    docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
                     """
                 }
             }
@@ -38,8 +37,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh """
-                    docker push $DOCKER_USER/$APP_NAME:v1.0
+                    bat """
+                    docker push %DOCKER_USER%/%APP_NAME%:v1.0
                     """
                 }
             }
