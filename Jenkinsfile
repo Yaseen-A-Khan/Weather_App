@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "${env.APP_NAME}"  // You can define APP_NAME in Jenkins or pass it at build time
+        DOCKER_USER = "${env.DOCKER_USER}"
+        DOCKER_PASS = "${env.DOCKER_PASS}"
+        APP_NAME = "${env.APP_NAME}"
     }
 
     stages {
@@ -14,9 +16,9 @@ pipeline {
 
         stage('Login to Docker') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                script {
                     bat """
-                    echo %%DOCKER_PASS%% | docker login -u %%DOCKER_USER%% --password-stdin
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                     """
                 }
             }
@@ -24,9 +26,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                script {
                     bat """
-                    docker build -t %%DOCKER_USER%%/%APP_NAME%:v1.0 .
+                    docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
                     """
                 }
             }
@@ -34,9 +36,9 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                script {
                     bat """
-                    docker push %%DOCKER_USER%%/%APP_NAME%:v1.0
+                    docker push %DOCKER_USER%/%APP_NAME%:v1.0
                     """
                 }
             }
