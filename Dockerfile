@@ -20,4 +20,5 @@ COPY --from=builder /app/build ./build
 EXPOSE 3000
 
 # Serve on 0.0.0.0 so it's reachable from outside the container
-CMD ["serve", "-s", "build", "--listen", "0.0.0.0:3000"]
+CMD ["serve", "-s", "build", "--listen", "http://0.0.0.0:3000"]
+
