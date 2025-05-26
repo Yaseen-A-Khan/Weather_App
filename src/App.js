@@ -51,7 +51,7 @@ function App() {
 
   const getBackgroundClass = () => {
     if (!weather?.main) return 'app';
-    return weather.main.temp > 16 ? 'app warm' : 'app';
+    return weather.main.temp > 23 ? 'app warm' : 'app';
   }
 
   return (
