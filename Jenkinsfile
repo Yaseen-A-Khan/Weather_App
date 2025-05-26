@@ -28,6 +28,10 @@ pipeline {
             steps {
                 script {
                     bat """
+                    docker rmi %DOCKER_USER%/%APP_NAME%:v1.0 || exit 0
+                    """
+
+                    bat """
                     docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
                     """
                 }
