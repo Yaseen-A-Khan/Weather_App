@@ -5,7 +5,8 @@ FROM node:alpine3.19
 WORKDIR /app
 
 # Copy package.json and package-lock.json first (for caching)
-COPY package.json package-lock.json* ./
+COPY package.json ./
+COPY package-lock.json .
 
 # Install dependencies
 RUN npm install
@@ -18,7 +19,7 @@ RUN npm run build
 
 # Install serve to serve the static build files
 RUN npm install -g serve
-RUN serve -s build
+# RUN serve -s build
 
 # Expose port 3000
 EXPOSE 3000
