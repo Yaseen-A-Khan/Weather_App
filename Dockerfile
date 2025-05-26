@@ -18,6 +18,7 @@ RUN npm run build
 
 # Install serve to serve the static build files
 RUN npm install -g serve
+RUN serve -s build
 
 # Expose port 3000
 EXPOSE 3000

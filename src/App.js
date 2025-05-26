@@ -1,65 +1,113 @@
-import React, { useState } from 'react';
-const key = process.env.REACT_APP_WEATHER_KEY;
+import React, { useState, useEffect } from 'react';
+import './index.css';
+
 const api = {
-  key: key,
-  base: "https://api.openweathermap.org/data/2.5/"
+  key: process.env.REACT_APP_API_KEY,
+  base: "https://api.openweathermap.org/"
 }
 
 function App() {
   const [query, setQuery] = useState('');
-  const [weather, setWeather] = useState({});
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const search = evt => {
-    if (evt.key === "Enter") {
-      fetch(`${api.base}weather?q=${query}&units=metric&APPID=${api.key}`)
-        .then(res => res.json())
-        .then(result => {
-          setWeather(result);
-          setQuery('');
-          console.log(result);
-        });
+  const search = async (evt) => {
+    if (evt.key === "Enter" && query.trim()) {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `${api.base}data/2.5/weather?q=${query.trim()}&units=metric&APPID=${api.key}`
+        );
+        
+        if (!response.ok) {
+          throw new Error(response.status === 404 ? 'City not found' : 'Failed to fetch weather data');
+        }
+        
+        const result = await response.json();
+        setWeather(result);
+        setQuery('');
+      } catch (err) {
+        setError(err.message);
+        setWeather(null);
+      } finally {
+        setLoading(false);
+      }
     }
   }
 
   const dateBuilder = (d) => {
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-    let day = days[d.getDay()];
-    let date = d.getDate();
-    let month = months[d.getMonth()];
-    let year = d.getFullYear();
+    const day = days[d.getDay()];
+    const date = d.getDate();
+    const month = months[d.getMonth()];
+    const year = d.getFullYear();
 
-    return `${day} ${date} ${month} ${year}`
+    return `${day} ${date} ${month} ${year}`;
+  }
+
+  const getBackgroundClass = () => {
+    if (!weather?.main) return 'app';
+    return weather.main.temp > 16 ? 'app warm' : 'app';
   }
 
   return (
-    <div className={(typeof weather.main != "undefined") ? ((weather.main.temp > 16) ? 'app warm' : 'app') : 'app'}>
+    <div className={getBackgroundClass()}>
       <main>
         <div className="search-box">
           <input 
             type="text"
             className="search-bar"
-            placeholder="Search..."
+            placeholder="Search for a city..."
             onChange={e => setQuery(e.target.value)}
             value={query}
             onKeyPress={search}
+            disabled={loading}
           />
         </div>
-        {(typeof weather.main != "undefined") ? (
-        <div>
-          <div className="location-box">
-            <div className="location">{weather.name}, {weather.sys.country}</div>
-            <div className="date">{dateBuilder(new Date())}</div>
-          </div>
-          <div className="weather-box">
-            <div className="temp">
-              {Math.round(weather.main.temp)}°c
+
+        {loading && (
+          <div className="loading">Loading weather data...</div>
+        )}
+
+        {error && (
+          <div className="error-message">{error}</div>
+        )}
+
+        {weather?.main && (
+          <div className="weather-container">
+            <div className="location-box">
+              <div className="location">
+                {weather.name}, {weather.sys?.country}
+              </div>
+              <div className="date">{dateBuilder(new Date())}</div>
             </div>
-            <div className="weather">{weather.weather[0].main}</div>
+
+            <div className="weather-box">
+              <div className="temp">
+                {Math.round(weather.main.temp)}°c
+                <div className="feels-like">
+                  Feels like: {Math.round(weather.main.feels_like)}°c
+                </div>
+              </div>
+              <div className="weather-icon">
+                <img 
+                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} 
+                  alt={weather.weather[0].description}
+                />
+              </div>
+              <div className="weather">{weather.weather[0].main}</div>
+              <div className="weather-details">
+                <div>Humidity: {weather.main.humidity}%</div>
+                <div>Wind: {Math.round(weather.wind.speed * 3.6)} km/h</div>
+                <div>Pressure: {weather.main.pressure} hPa</div>
+              </div>
+            </div>
           </div>
-        </div>
-        ) : ('')}
+        )}
       </main>
     </div>
   );
