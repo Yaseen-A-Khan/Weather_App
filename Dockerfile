@@ -18,4 +18,4 @@ COPY --from=builder /app/build ./build
 EXPOSE 3000
 
 # ✅ Correct way to serve the app
-CMD ["serve", "-s", "build"]
+CMD ["serve", "-s", "build", "-l", "0.0.0.0:3000"]
