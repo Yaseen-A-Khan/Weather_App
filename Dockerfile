@@ -1,27 +1,23 @@
-# Use official Node.js Alpine image
-FROM node:alpine3.19
+# Multi-stage build to reduce final image size
+# --- Stage 1: Build React app ---
+FROM node:alpine3.19 AS builder
 
-# Set working directory inside container
 WORKDIR /app
-
-# Copy package.json and package-lock.json first (for caching)
-COPY package.json ./
-
-# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm install
-
-# Copy all source code including .env
 COPY . .
-
-# Build React app (this reads .env and embeds env vars)
 RUN npm run build
 
-# Install serve to serve the static build files
-RUN npm install -g serve
-# RUN serve -s build
+# --- Stage 2: Serve React build ---
+FROM node:alpine3.19
 
-# Expose port 3000
+WORKDIR /app
+RUN npm install -g serve
+
+# Copy built files from previous stage
+COPY --from=builder /app/build ./build
+
 EXPOSE 3000
 
-# Serve the build folder statically
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Serve on 0.0.0.0 so it's reachable from outside the container
+CMD ["serve", "-s", "build", "--listen", "0.0.0.0:3000"]
