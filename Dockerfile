@@ -17,5 +17,5 @@ COPY --from=builder /app/build ./build
 
 EXPOSE 3000
 
-# ✅ Correct way to serve the app
+
 CMD ["serve", "-s", "build", "-l", "3000"]

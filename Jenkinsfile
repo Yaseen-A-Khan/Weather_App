@@ -51,13 +51,13 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-            // Clean any old container
+            
                     bat """
                     docker stop react-container || exit 0
                     docker rm react-container || exit 0
                     """
 
-            // Run new container
+        
                     bat """
                     docker run -d -p 3000:3000 --name react-container %DOCKER_USER%/%APP_NAME%:v1.0
                     """
