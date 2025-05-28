@@ -12,12 +12,8 @@ This project demonstrates how to build and deploy a ReactJS weather app using Je
 
 1. **Clone Repository:**
 
-   - Clone this repository and delete the `.env.enc` file from the project folder.
-
 2. **Configure Jenkins Pipeline:**
 
-   - Follow the instructions provided in the [Jenkins Installation Guide](https://github.com/Dev-Pradeep-NS/Documentation/tree/main/Jenkins-Installation).
-   - Refer to [this guide](https://github.com/Dev-Pradeep-NS/Documentation/tree/main/SSH%20setup%20btw%20Jenkins%20and%20Github) for detailed steps on setting up SSH Authentication between GitHub and Jenkins.
    - Go to your Jenkins dashboard:
      - Click on **New Item** to create a new project.
      - Choose **Multibranch Pipeline** and click **OK**.
@@ -26,14 +22,7 @@ This project demonstrates how to build and deploy a ReactJS weather app using Je
      - Give some name and paste your GitHub repository URL in the **Repository URL** field and also you can specify the branch as well.
      - Apply and save the configuration.
 
-3. **Create Encrypted `.env` File:**
-
-   - Generate an encrypted `.env.enc` file containing your environment variables using the following command:
-     ```
-     openssl enc -aes-256-cbc -in .env -out .env.enc2 -pbkdf2
-     ```
-
-4. **Set up Docker Hub Credentials in Jenkins:**
+3. **Set up Docker Hub Credentials in Jenkins:**
 
    - Go to your Jenkins dashboard and click on **Manage Jenkins**.
    - Navigate to **Configure System**.
@@ -42,7 +31,6 @@ This project demonstrates how to build and deploy a ReactJS weather app using Je
      - `APP_NAME`: weatherapp
      - `DOCKER_PASS`: docker_hub_password
      - `DOCKER_USER`: docker_hub_username
-     - `ENV_PASSWORD`: password_used_to_encrypt .env file
 
 5. **Build and Push Docker Image:**
    - The pipeline will build and push the Docker image to your Docker Hub registry.
