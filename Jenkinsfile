@@ -9,11 +9,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Source') {
-            steps {
-                checkout scm
-            }
-        }
+        // stage('Checkout Source') {
+        //     steps {
+        //         checkout scm
+        //     }
+        // }
 
         // stage('Verify Kubernetes Setup') {
         //     steps {
@@ -87,6 +87,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Wait for Pod') {
+            steps {
+                script {
+                    bat 'kubectl wait --for=condition=ready pod -l app=weather-app --timeout=90s'
+                }
+            }
+        }
+
 
         stage('Verify Deployment') {
             steps {
