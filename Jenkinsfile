@@ -81,6 +81,9 @@ pipeline {
             steps {
                 script {
                     bat '''
+                    kubectl delete deployment weather-app
+                    kubectl delete service weather-service
+                    
                     kubectl apply -f k8s/deployment.yaml
                     kubectl apply -f k8s/service.yaml
                     '''
