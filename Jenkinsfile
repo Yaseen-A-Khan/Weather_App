@@ -15,15 +15,15 @@ pipeline {
             }
         }
 
-        stage('Verify Kubernetes Setup') {
-            steps {
-                script {
-                    bat 'minikube status'
-                    bat 'kubectl get nodes'
-                    bat 'kubectl get pods -A'
-                }
-            }
-        }
+        // stage('Verify Kubernetes Setup') {
+        //     steps {
+        //         script {
+        //             bat 'minikube status'
+        //             bat 'kubectl get nodes'
+        //             bat 'kubectl get pods -A'
+        //         }
+        //     }
+        // }
 
 
         stage('Decrypt .env') {
