@@ -14,6 +14,17 @@ pipeline {
             }
         }
 
+        stage('Decrypt .env File') {
+            steps {
+                withCredentials([string(credentialsId: 'ENV_DECRYPT_KEY', variable: 'DECRYPT_KEY')]) {
+                    bat """
+                    if exist .env (del .env)
+                    openssl enc -aes-256-cbc -d -in .env.enc -out .env -pass pass:%DECRYPT_KEY%
+                    """
+                }
+            }
+        }
+
         stage('Login to Docker') {
             steps {
                 script {
@@ -29,9 +40,6 @@ pipeline {
                 script {
                     bat """
                     docker rmi %DOCKER_USER%/%APP_NAME%:v1.0 || exit 0
-                    """
-
-                    bat """
                     docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
                     """
                 }
@@ -51,18 +59,20 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-            
                     bat """
                     docker stop react-container || exit 0
                     docker rm react-container || exit 0
-                    """
-
-        
-                    bat """
-                    docker run -d -p 3000:3000 --name react-container %DOCKER_USER%/%APP_NAME%:v1.0
+                    docker run -d -p 3000:3000 --env-file .env --name react-container %DOCKER_USER%/%APP_NAME%:v1.0
                     """
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up decrypted env file for security
+            bat "if exist .env (del .env)"
         }
     }
 }
