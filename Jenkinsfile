@@ -68,6 +68,15 @@ pipeline {
             }
         }
 
+        stage('Start Minikube') {
+            steps {
+                script {
+                    bat 'minikube start'
+                }
+            }
+        }
+
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
