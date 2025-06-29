@@ -25,6 +25,13 @@ pipeline {
         //     }
         // }
 
+        stage('Start Minikube') {
+            steps {
+                script {
+                    bat '''minikube status || minikube start'''
+                }
+            }
+        }
 
         stage('Decrypt .env') {
             steps {
@@ -68,22 +75,16 @@ pipeline {
             }
         }
 
-        stage('Start Minikube') {
-            steps {
-                script {
-                    bat 'minikube start'
-                }
-            }
-        }
 
 
         stage('Deploy to Kubernetes') {
             steps {
                 script {
                     bat '''
-                    kubectl delete deployment weather-app
-                    kubectl delete service weather-service
-                    
+                   kubectl delete deployment weather-app || exit 0
+                    kubectl delete service weather-service || exit 0
+
+
                     kubectl apply -f k8s/deployment.yaml
                     kubectl apply -f k8s/service.yaml
                     '''
