@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = "${env.DOCKER_USER}"
-        DOCKER_PASS = "${env.DOCKER_PASS}"
-        APP_NAME = "${env.APP_NAME}"
-        ENV_PASSWORD = "${env.ENV_PASSWORD}"
+        DOCKER_USER   = "${env.DOCKER_USER}"      // Set in Jenkins -> Manage Jenkins -> Global properties
+        DOCKER_PASS   = "${env.DOCKER_PASS}"      // Set in Jenkins -> Manage Jenkins -> Global properties
+        APP_NAME      = "${env.APP_NAME}"         // Example: "weatherapp"
+        ENV_PASSWORD  = "${env.ENV_PASSWORD}"     // Password used to decrypt .env.enc
     }
 
     stages {
@@ -14,6 +14,17 @@ pipeline {
                 checkout scm
             }
         }
+
+        stage('Verify Kubernetes Setup') {
+            steps {
+                script {
+                    bat 'minikube status'
+                    bat 'kubectl get nodes'
+                    bat 'kubectl get pods -A'
+                }
+            }
+        }
+
 
         stage('Decrypt .env') {
             steps {
@@ -68,7 +79,7 @@ pipeline {
             }
         }
 
-        stage('Confirm App Running') {
+        stage('Verify Deployment') {
             steps {
                 script {
                     bat 'kubectl get pods'
@@ -77,7 +88,7 @@ pipeline {
             }
         }
 
-        stage('Open App URL') {
+        stage('Expose App URL') {
             steps {
                 script {
                     bat 'minikube service weather-service --url'
