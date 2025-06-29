@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weather-app
+  template:
+    metadata:
+      labels:
+        app: weather-app
+    spec:
+      containers:
+        - name: weather-container
+          image: yaseenakhan/weatherapp:v1.0
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: weather-secret

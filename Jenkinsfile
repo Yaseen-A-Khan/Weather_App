@@ -5,6 +5,7 @@ pipeline {
         DOCKER_USER = "${env.DOCKER_USER}"
         DOCKER_PASS = "${env.DOCKER_PASS}"
         APP_NAME = "${env.APP_NAME}"
+        ENV_PASSWORD = "${env.ENV_PASSWORD}"
     }
 
     stages {
@@ -14,65 +15,74 @@ pipeline {
             }
         }
 
-        stage('Decrypt .env File') {
+        stage('Decrypt .env') {
             steps {
-                withCredentials([string(credentialsId: 'ENV_DECRYPT_KEY', variable: 'DECRYPT_KEY')]) {
-                    bat """
+                script {
+                    bat '''
                     if exist .env (del .env)
-                    openssl enc -aes-256-cbc -d -in .env.enc -out .env -pass pass:%DECRYPT_KEY%
-                    """
+                    openssl enc -aes-256-cbc -d -in .env.enc -out .env -pass pass:%ENV_PASSWORD%
+                    '''
                 }
             }
         }
 
-        stage('Login to Docker') {
+        stage('Docker Login') {
             steps {
                 script {
-                    bat """
-                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                    """
+                    bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
                 }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build & Push Docker Image') {
             steps {
                 script {
-                    bat """
+                    bat '''
                     docker rmi %DOCKER_USER%/%APP_NAME%:v1.0 || exit 0
                     docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
-                    """
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    bat """
                     docker push %DOCKER_USER%/%APP_NAME%:v1.0
-                    """
+                    '''
                 }
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Update Kubernetes Secret') {
             steps {
                 script {
-                    bat """
-                    docker stop react-container || exit 0
-                    docker rm react-container || exit 0
-                    docker run -d -p 3000:3000 --env-file .env --name react-container %DOCKER_USER%/%APP_NAME%:v1.0
-                    """
+                    bat '''
+                    kubectl delete secret weather-secret || exit 0
+                    kubectl create secret generic weather-secret --from-env-file=.env
+                    '''
                 }
             }
         }
-    }
 
-    post {
-        always {
-            // Clean up decrypted env file for security
-            bat "if exist .env (del .env)"
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    bat '''
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                    '''
+                }
+            }
+        }
+
+        stage('Confirm App Running') {
+            steps {
+                script {
+                    bat 'kubectl get pods'
+                    bat 'kubectl get service weather-service'
+                }
+            }
+        }
+
+        stage('Open App URL') {
+            steps {
+                script {
+                    bat 'minikube service weather-service --url'
+                }
+            }
         }
     }
 }
