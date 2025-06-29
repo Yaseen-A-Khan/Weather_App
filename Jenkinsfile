@@ -25,13 +25,13 @@ pipeline {
         //     }
         // }
 
-        stage('Start Minikube') {
-            steps {
-                script {
-                    bat '''minikube status || minikube start'''
-                }
-            }
-        }
+        // stage('Start Minikube') {
+        //     steps {
+        //         script {
+        //             bat '''minikube status || minikube start'''
+        //         }
+        //     }
+        // }
 
         stage('Decrypt .env') {
             steps {
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 script {
                     bat '''
-                    kubectl delete secret weather-secret || exit 0
+                    
                     kubectl create secret generic weather-secret --from-env-file=.env
                     '''
                 }
@@ -92,13 +92,13 @@ pipeline {
             }
         }
 
-        stage('Wait for Pod') {
-            steps {
-                script {
-                    bat 'kubectl wait --for=condition=ready pod -l app=weather-app --timeout=90s'
-                }
-            }
-        }
+        // stage('Wait for Pod') {
+        //     steps {
+        //         script {
+        //             bat 'kubectl wait --for=condition=ready pod -l app=weather-app --timeout=90s'
+        //         }
+        //     }
+        // }
 
 
         stage('Verify Deployment') {
@@ -113,7 +113,7 @@ pipeline {
         stage('Expose App URL') {
             steps {
                 script {
-                    bat 'minikube service weather-service --url'
+                    bat 'minikube service weather-service'
                 }
             }
         }
