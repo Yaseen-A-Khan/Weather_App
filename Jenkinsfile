@@ -76,14 +76,21 @@ pipeline {
         }
 
 
-        stage('Deploy to Kubernetes') {
+        stage('Delete previous deployment') {
             steps {
                 script {
                     bat '''
                     kubectl delete deployment weather-app || exit 0
                     kubectl delete service weather-service || exit 0
+                    '''
+                }
+            }
+        }
 
-
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    bat '''
                     kubectl apply -f k8s/deployment.yaml
                     kubectl apply -f k8s/service.yaml
                     '''
