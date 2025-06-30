@@ -75,6 +75,14 @@ pipeline {
             }
         }
 
+        stage('Weather Secret'){
+            steps{
+                script{
+                    bat '''kubectl get secret weather-secret -o yaml'''
+                }
+            }
+        }
+
 
         stage('Delete previous deployment') {
             steps {
