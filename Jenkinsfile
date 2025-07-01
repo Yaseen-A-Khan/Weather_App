@@ -28,7 +28,7 @@ pipeline {
         stage('Start Minikube') {
             steps {
                 script {
-                    bat '''minikube start'''
+                    bat '''minikube start --driver=docker'''
                 }
             }
         }
@@ -97,10 +97,11 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
+                withEnv(["KUBECONFIG=C:\\Users\\yasee\\.kube\\config"])
                 script {
                     bat '''
-                    kubectl apply -f deployment.yaml
-                    kubectl apply -f service.yaml
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
                     '''
                 }
             }
