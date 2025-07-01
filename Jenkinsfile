@@ -117,21 +117,21 @@ pipeline {
         // }
 
 
-        stage('Verify Deployment') {
-            steps {
-                script {
-                    bat 'kubectl get pods'
-                    bat 'kubectl get service weather-service'
-                }
-            }
-        }
+    //     stage('Verify Deployment') {
+    //         steps {
+    //             script {
+    //                 bat 'kubectl get pods'
+    //                 bat 'kubectl get service weather-service'
+    //             }
+    //         }
+    //     }
 
-        stage('Expose App URL') {
-            steps {
-                script {
-                    bat 'minikube service weather-service'
-                }
-            }
-        }
-    }
+    //     stage('Expose App URL') {
+    //         steps {
+    //             script {
+    //                 bat 'minikube service weather-service'
+    //             }
+    //         }
+    //     }
+    // }
 }
