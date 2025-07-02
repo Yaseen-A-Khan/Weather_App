@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER   = "${env.DOCKER_USER}"      // Set in Jenkins -> Manage Jenkins -> Global properties
-        DOCKER_PASS   = "${env.DOCKER_PASS}"      // Set in Jenkins -> Manage Jenkins -> Global properties
-        APP_NAME      = "${env.APP_NAME}"         // Example: "weatherapp"
-        ENV_PASSWORD  = "${env.ENV_PASSWORD}"     // Password used to decrypt .env.enc
+        DOCKER_USER   = "${env.DOCKER_USER}"       
+        DOCKER_PASS   = "${env.DOCKER_PASS}"       
+        APP_NAME      = "${env.APP_NAME}"         
+        ENV_PASSWORD  = "${env.ENV_PASSWORD}"     
     }
 
     stages {
@@ -72,14 +72,6 @@ pipeline {
                     kubectl apply -f k8s/service.yaml
                     '''
                     }
-                }
-            }
-        }
-
-        stage('Open Service URL') {
-            steps {
-                script {
-                    bat 'call open_service.bat '
                 }
             }
         }
