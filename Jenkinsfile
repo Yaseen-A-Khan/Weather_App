@@ -10,12 +10,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout'){
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Decrypt .env') {
             steps {
                 script {
@@ -58,15 +52,6 @@ pipeline {
             }
         }
 
-        stage('Weather Secret'){
-            steps{
-                script{
-                    bat '''kubectl get secret weather-secret -o yaml'''
-                }
-            }
-        }
-
-
         stage('Delete previous deployment') {
             steps {
                 script {
@@ -91,12 +76,13 @@ pipeline {
             }
         }
 
-        stage('Expose App URL') {
+        stage('Open Service URL') {
             steps {
                 script {
-                    bat 'minikube service weather-service'
+                    bat 'start cmd /k "minikube service weather-service"'
                 }
             }
         }
+
     }
 }
