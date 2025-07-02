@@ -79,7 +79,7 @@ pipeline {
         stage('Open Service URL') {
             steps {
                 script {
-                    bat ''' open_service.bat '''
+                    bat 'call open_service.bat '
                 }
             }
         }
