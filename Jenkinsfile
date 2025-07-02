@@ -79,7 +79,7 @@ pipeline {
         stage('Open Service URL') {
             steps {
                 script {
-                    bat 'start cmd /k "minikube service weather-service"'
+                    bat ''' open_service.bat '''
                 }
             }
         }
