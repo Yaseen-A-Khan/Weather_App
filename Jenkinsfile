@@ -9,27 +9,10 @@ pipeline {
     }
 
     stages {
-        // stage('Checkout Source') {
-        //     steps {
-        //         checkout scm
-        //     }
-        // }
 
-        // stage('Verify Kubernetes Setup') {
-        //     steps {
-        //         script {
-        //             bat 'minikube status'
-        //             bat 'kubectl get nodes'
-        //             bat 'kubectl get pods -A'
-        //         }
-        //     }
-        // }
-
-        stage('Start Minikube') {
+        stage('Checkout'){
             steps {
-                script {
-                    bat '''minikube start --driver=docker'''
-                }
+                checkout scm
             }
         }
 
@@ -108,30 +91,12 @@ pipeline {
             }
         }
 
-        // stage('Wait for Pod') {
-        //     steps {
-        //         script {
-        //             bat 'kubectl wait --for=condition=ready pod -l app=weather-app --timeout=90s'
-        //         }
-        //     }
-        // }
-
-
-    //     stage('Verify Deployment') {
-    //         steps {
-    //             script {
-    //                 bat 'kubectl get pods'
-    //                 bat 'kubectl get service weather-service'
-    //             }
-    //         }
-    //     }
-
-    //     stage('Expose App URL') {
-    //         steps {
-    //             script {
-    //                 bat 'minikube service weather-service'
-    //             }
-    //         }
-    //     }
+        stage('Expose App URL') {
+            steps {
+                script {
+                    bat 'minikube service weather-service'
+                }
+            }
+        }
     }
 }
