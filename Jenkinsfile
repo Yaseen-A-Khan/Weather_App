@@ -33,9 +33,9 @@ pipeline {
             steps {
                 script {
                     bat '''
-                    docker rmi %DOCKER_USER%/%APP_NAME%:v1.0 || exit 0
-                    docker build -t %DOCKER_USER%/%APP_NAME%:v1.0 .
-                    docker push %DOCKER_USER%/%APP_NAME%:v1.0
+                    docker rmi %DOCKER_USER%/%APP_NAME%:v1.2d || exit 0
+                    docker build --no-cache -t %DOCKER_USER%/%APP_NAME%:v1.2 .
+                    docker push %DOCKER_USER%/%APP_NAME%:v1.2
                     '''
                 }
             }
