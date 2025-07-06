@@ -65,7 +65,7 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                withEnv(["KUBECONFIG=C:\Users\yasee\.kube\config"]){
+                withEnv(["KUBECONFIG=C:\\Users\\yasee\\.kube\\config"]){
                     script {
                     bat '''
                     kubectl apply -f k8s/deployment.yaml
