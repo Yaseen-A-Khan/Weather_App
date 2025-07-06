@@ -15,7 +15,7 @@ pipeline {
                 script {
                     bat '''
                     if exist .env (del .env)
-                    openssl enc -aes-256-cbc -pbkdf2 -d -in .env.enc -out .env -pass pass:%ENV_PASSWORD%
+                    openssl enc -aes-256-cbc -d -in .env.enc -out .env -pass pass:%ENV_PASSWORD%
                     '''
                 }
             }
