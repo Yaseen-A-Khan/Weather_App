@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import './index.css';
+import React, { useState } from "react";
+import "./index.css";
+
 
 const api = {
   key: process.env.REACT_APP_API_KEY,
-  base: "https://api.openweathermap.org/"
-}
+  base: "https://api.openweathermap.org/",
+};
 
 function App() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,16 +19,22 @@ function App() {
       setError(null);
       try {
         const response = await fetch(
-          `${api.base}data/2.5/weather?q=${query.trim()}&units=metric&APPID=${api.key}`
+          `${api.base}data/2.5/weather?q=${query.trim()}&units=metric&APPID=${
+            api.key
+          }`
         );
-        
+
         if (!response.ok) {
-          throw new Error(response.status === 404 ? 'City not found' : 'Failed to fetch weather data');
+          throw new Error(
+            response.status === 404
+              ? "City not found"
+              : "Failed to fetch weather data"
+          );
         }
-        
+
         const result = await response.json();
         setWeather(result);
-        setQuery('');
+        setQuery("");
       } catch (err) {
         setError(err.message);
         setWeather(null);
@@ -35,11 +42,32 @@ function App() {
         setLoading(false);
       }
     }
-  }
+  };
 
   const dateBuilder = (d) => {
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
 
     const day = days[d.getDay()];
     const date = d.getDate();
@@ -47,34 +75,35 @@ function App() {
     const year = d.getFullYear();
 
     return `${day} ${date} ${month} ${year}`;
-  }
+  };
 
   const getBackgroundClass = () => {
-    if (!weather?.main) return 'app';
-    return weather.main.temp > 23 ? 'app warm' : 'app';
-  }
+    if (error) return "app error";
+    if (!weather?.main) return "app";
+    return weather.main.temp > 23 ? "app warm" : "app";
+  };
 
   return (
     <div className={getBackgroundClass()}>
       <main>
         <div className="search-box">
-          <input 
+          <input
             type="text"
             className="search-bar"
             placeholder="Search for a city..."
-            onChange={e => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value)}
             value={query}
             onKeyPress={search}
             disabled={loading}
           />
         </div>
 
-        {loading && (
-          <div className="loading">Loading weather data...</div>
-        )}
+        {loading && <div className="loading">Loading weather data...</div>}
 
         {error && (
-          <div className="error-message">{error}</div>
+          <div className="error-message">
+            {error}
+          </div>
         )}
 
         {weather?.main && (
@@ -94,8 +123,8 @@ function App() {
                 </div>
               </div>
               <div className="weather-icon">
-                <img 
-                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} 
+                <img
+                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
                   alt={weather.weather[0].description}
                 />
               </div>
